@@ -9,16 +9,6 @@ config
 -broker="tcp://127.0.0.1:1883"
 ```
 
-
-json format
------
-```
-{
-	"topic": "yourTopicHere",
-	"message": "addYourDataHere"
-}
-```
-
 Helm Chart
 -----
 Nothing special, just built using the create chart feature of Helm.
