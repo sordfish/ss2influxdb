@@ -1,8 +1,8 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -14,42 +14,75 @@ import (
 )
 
 var (
+	// SSApiTokenEndpoint = "http://192.168.1.93:1080/oauth/token"
 	SSApiTokenEndpoint = "https://pv.inteless.com/oauth/token"
 )
 
-type SSApiResponse struct {
-	Code    string `json:"code"`
-	Message string `json:"msg"`
-	Success bool   `json:"success"`
+type SSApiErrorResponse struct {
+	Timestamp string `json:"timestamp"`
+	Status    int    `json:"status"`
+	Error     string `json:"error"`
+	Path      string `json:"path"`
 }
 
 type SSApiTokenResponse struct {
-	AccessToken  string `json:"access_token"`
-	TokenType    string `json:"token_type"`
-	RefreshToken string `json:"refresh_token"`
-	TokenExpiry  string `json:"expires_in"`
-	Scope        string `json:"scope"`
+	Code    int    `json:"code"`
+	Message string `json:"msg"`
+	Success bool   `json:"success"`
+	Data    struct {
+		AccessToken  string `json:"access_token"`
+		TokenType    string `json:"token_type"`
+		RefreshToken string `json:"refresh_token"`
+		TokenExpiry  int    `json:"expires_in"`
+		Scope        string `json:"scope"`
+	} `json:"data"`
 }
 
-func GetAuthToken(user, pass string) SSApiTokenResponse {
+func GetAuthToken(user, pass string) (SSApiTokenResponse, SSApiErrorResponse) {
 
 	fmt.Println("Getting token")
 
 	url := SSApiTokenEndpoint
 
+	fmt.Println("Getting token from: ", url)
+
 	httpClient := http.Client{
 		Timeout: time.Second * 10,
 	}
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	type PostBody struct {
+		Username  string `json:"username"`
+		Password  string `json:"password"`
+		GrantType string `json:"grant_type"`
+		ClientId  string `json:"client_id"`
+		Source    string `json:"source"`
+		AreaCode  string `json:"areaCode"`
+	}
+
+	postbody := PostBody{
+		Username:  user,
+		Password:  pass,
+		GrantType: "password",
+		ClientId:  "csp-web",
+		Source:    "sunsynk",
+		AreaCode:  "elinter",
+	}
+
+	postbodyJSON, err := json.Marshal(postbody)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(postbodyJSON))
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	req.Header.Add("Content-Type", "application/json")
 
 	res, getErr := httpClient.Do(req)
 	if getErr != nil {
 		log.Fatal(getErr)
 	}
+
+	fmt.Println("res: ", fmt.Sprint(res.StatusCode))
 
 	if res.Body != nil {
 		defer res.Body.Close()
@@ -60,15 +93,24 @@ func GetAuthToken(user, pass string) SSApiTokenResponse {
 		log.Fatal(readErr)
 	}
 
+	fmt.Println("body: ", string(body))
+
 	d := SSApiTokenResponse{}
-	jsonErr := json.Unmarshal(body, &d)
-	if jsonErr != nil {
-		log.Fatal(jsonErr)
+	e := SSApiErrorResponse{}
+
+	if res.StatusCode == 200 {
+		jsonErr := json.Unmarshal(body, &d)
+		if jsonErr != nil {
+			log.Fatal(jsonErr)
+		}
+		return d, e
+	} else {
+		jsonErr := json.Unmarshal(body, &e)
+		if jsonErr != nil {
+			log.Fatal(jsonErr)
+		}
+		return d, e
 	}
-
-	fmt.Println(d.AccessToken)
-
-	return d
 }
 
 func livez(w http.ResponseWriter, req *http.Request) {
@@ -95,8 +137,8 @@ func healthz(w http.ResponseWriter, req *http.Request, c mqtt.Client) {
 
 func main() {
 
-	brokerPtr := flag.String("broker", "tcp://127.0.0.1:1883", "MQTT broker address")
-	flag.Parse()
+	// brokerPtr := flag.String("broker", "tcp://127.0.0.1:1883", "MQTT broker address")
+	// flag.Parse()
 
 	ss_user := os.Getenv("SS_USER")
 	ss_pass := os.Getenv("SS_PASS")
@@ -105,32 +147,42 @@ func main() {
 		log.Fatalf("No creds defined")
 	}
 
-	ss_auth_token := GetAuthToken(ss_user, ss_pass)
+	ss_auth_token, ss_error := GetAuthToken(ss_user, ss_pass)
 
-	fmt.Println(ss_auth_token.AccessToken)
-	fmt.Println(ss_auth_token.RefreshToken)
-	fmt.Println(ss_auth_token.Scope)
-	fmt.Println(ss_auth_token.TokenExpiry)
-	fmt.Println(ss_auth_token.TokenType)
-
-	// Connect to the MQTT server
-	opts := mqtt.NewClientOptions().AddBroker(*brokerPtr)
-	opts.SetClientID("ss2mqtt")
-	opts.SetKeepAlive(30 * time.Second)
-	opts.SetPingTimeout(10 * time.Second)
-	c := mqtt.NewClient(opts)
-
-	if token := c.Connect(); token.Wait() && token.Error() != nil {
-		log.Fatalf("Error with MQTT - Err: %s", token.Error())
+	if (SSApiErrorResponse{}) != ss_error {
+		fmt.Println(ss_error.Error)
 	}
 
-	http.HandleFunc("/livez", livez)
-	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		healthz(w, r, c)
-	})
+	if (SSApiTokenResponse{}) != ss_auth_token {
+		fmt.Println(ss_auth_token.Message)
+		fmt.Println(ss_auth_token.Data.RefreshToken)
+		fmt.Println(ss_auth_token.Data.AccessToken)
+		fmt.Println(ss_auth_token.Data.RefreshToken)
+		fmt.Println(ss_auth_token.Data.Scope)
+		fmt.Println(ss_auth_token.Data.TokenExpiry)
+		fmt.Println(ss_auth_token.Data.TokenType)
+	}
 
-	http.ListenAndServe(":34567", nil)
+	// os.Exit(1)
 
-	c.Disconnect(250)
+	// Connect to the MQTT server
+	// opts := mqtt.NewClientOptions().AddBroker(*brokerPtr)
+	// opts.SetClientID("ss2mqtt")
+	// opts.SetKeepAlive(30 * time.Second)
+	// opts.SetPingTimeout(10 * time.Second)
+	// c := mqtt.NewClient(opts)
+
+	// if token := c.Connect(); token.Wait() && token.Error() != nil {
+	// 	log.Fatalf("Error with MQTT - Err: %s", token.Error())
+	// }
+
+	// http.HandleFunc("/livez", livez)
+	// http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+	// 	healthz(w, r, c)
+	// })
+
+	// http.ListenAndServe(":34567", nil)
+
+	// c.Disconnect(250)
 
 }
