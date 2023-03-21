@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -36,6 +37,23 @@ type SSApiTokenResponse struct {
 		TokenExpiry  int    `json:"expires_in"`
 		Scope        string `json:"scope"`
 	} `json:"data"`
+}
+
+type SSRequest struct {
+	Endpoint string
+	Token    string
+	ReqType  string
+	Data     interface{}
+}
+
+func SSApiRequest(SSRequest) (http.Response, error) {
+
+	switch req_type {
+	case "GET":
+	case "POST":
+	default:
+	}
+
 }
 
 func GetAuthToken(user, pass string) (SSApiTokenResponse, SSApiErrorResponse) {
@@ -137,8 +155,8 @@ func healthz(w http.ResponseWriter, req *http.Request, c mqtt.Client) {
 
 func main() {
 
-	// brokerPtr := flag.String("broker", "tcp://127.0.0.1:1883", "MQTT broker address")
-	// flag.Parse()
+	brokerPtr := flag.String("broker", "tcp://127.0.0.1:1883", "MQTT broker address")
+	flag.Parse()
 
 	ss_user := os.Getenv("SS_USER")
 	ss_pass := os.Getenv("SS_PASS")
@@ -166,23 +184,23 @@ func main() {
 	// os.Exit(1)
 
 	// Connect to the MQTT server
-	// opts := mqtt.NewClientOptions().AddBroker(*brokerPtr)
-	// opts.SetClientID("ss2mqtt")
-	// opts.SetKeepAlive(30 * time.Second)
-	// opts.SetPingTimeout(10 * time.Second)
-	// c := mqtt.NewClient(opts)
+	opts := mqtt.NewClientOptions().AddBroker(*brokerPtr)
+	opts.SetClientID("ss2mqtt")
+	opts.SetKeepAlive(30 * time.Second)
+	opts.SetPingTimeout(10 * time.Second)
+	c := mqtt.NewClient(opts)
 
-	// if token := c.Connect(); token.Wait() && token.Error() != nil {
-	// 	log.Fatalf("Error with MQTT - Err: %s", token.Error())
-	// }
+	if token := c.Connect(); token.Wait() && token.Error() != nil {
+		log.Fatalf("Error with MQTT - Err: %s", token.Error())
+	}
 
-	// http.HandleFunc("/livez", livez)
-	// http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-	// 	healthz(w, r, c)
-	// })
+	http.HandleFunc("/livez", livez)
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		healthz(w, r, c)
+	})
 
-	// http.ListenAndServe(":34567", nil)
+	http.ListenAndServe(":34567", nil)
 
-	// c.Disconnect(250)
+	c.Disconnect(250)
 
 }
