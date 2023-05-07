@@ -8,7 +8,7 @@ on:
       - '.github/workflows/build-and-push.yaml'
 
 jobs:
-  docker-gstreamer:
+  docker-build:
     runs-on: ubuntu-latest
     steps:
       -
