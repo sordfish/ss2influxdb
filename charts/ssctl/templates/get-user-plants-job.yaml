@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ssctl-user-plants
+spec:
+  schedule: "12 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: ssctl-user-plants
+            image: ssctl:0.1.0
+            imagePullPolicy: IfNotPresent
+            command:
+            - /app/ssctl
+            - user
+            - --k8s
+          restartPolicy: OnFailure

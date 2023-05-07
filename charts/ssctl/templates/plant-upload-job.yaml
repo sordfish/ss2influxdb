@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ssctl-plant-upload
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: ssctl-plant-upload
+            image: ssctl:0.1.0
+            imagePullPolicy: IfNotPresent
+            command:
+            - /app/ssctl
+            - plant
+            - --k8s
+            - -u
+            env:
+            - name: INFLUXDB_URL
+              value: {{ .Values.Influxdb.url }}
+          restartPolicy: OnFailure
+
+
+          

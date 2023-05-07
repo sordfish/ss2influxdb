@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ssctl-auth
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: ssctl-auth
+            image: ssctl:0.1.0
+            imagePullPolicy: IfNotPresent
+            command:
+            - /app/ssctl
+            - auth
+            - --k8s
+          restartPolicy: OnFailure

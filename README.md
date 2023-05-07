@@ -1,22 +1,5 @@
-# ss2mqtt
+# ssctl
 
-Does what it says on the tin, takes data from sunsynk.net and transforms it to an mqtt message - no auth no tls!
+Tool to access data from https://sunsynk.net
 
-config
------
-- MQTT Broker address -
-```
--broker="tcp://127.0.0.1:1883"
-```
-
-Helm Chart
------
-Nothing special, just built using the create chart feature of Helm.
-
-Deployment
------
-Set broker via Values.mqtt.broker
-
-Service
------
-Listening on port 80
+TBC

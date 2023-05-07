@@ -1,6 +1,6 @@
 apiVersion: v2
-name: ss2mqtt
-description: A Helm chart for Kubernetes - ss2mqtt
+name: ssctl
+description: A Helm chart for ssctl
 
 # A chart can be either an 'application' or a 'library' chart.
 #
