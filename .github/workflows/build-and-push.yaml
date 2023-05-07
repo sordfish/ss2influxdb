@@ -1,5 +1,5 @@
 
-name: build container image ss2mqtt and push
+name: build container image ssctl and push
 
 on:
   push:
@@ -34,4 +34,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
-          tags: sordfish/ss2mqtt:latest,sordfish/ss2mqtt:0.1.0
+          tags: sordfish/ssctl:latest,sordfish/ssctl:0.1.0
