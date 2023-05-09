@@ -74,7 +74,7 @@ func Plant(k8s bool) string {
 
 	var plantDataLineString, SunsynkToken, SunsynkPlantId string
 
-	today := time.Now().Format("2006-01-02")
+	today := time.Now().UTC().Format("2006-01-02")
 	dateOverride := os.Getenv("SS_DATE")
 
 	if dateOverride != "" {
