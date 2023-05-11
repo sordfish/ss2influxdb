@@ -26,7 +26,6 @@ func Login() (*kubernetes.Clientset, error) {
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 		if err != nil {
 			log.Printf("Failed to load kubeconfig file at %s: %v\n", kubeconfigPath, err)
-			return nil, err
 		}
 	} else {
 
@@ -34,7 +33,6 @@ func Login() (*kubernetes.Clientset, error) {
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfigPath)
 		if err != nil {
 			log.Printf("Failed to load kubeconfig file at %s: %v\n", kubeconfigPath, err)
-			return nil, err
 		}
 	}
 

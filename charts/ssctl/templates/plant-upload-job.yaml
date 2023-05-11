@@ -10,7 +10,7 @@ spec:
         spec:
           containers:
           - name: ssctl-plant-upload
-            image: ssctl:0.1.0
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
             imagePullPolicy: IfNotPresent
             command:
             - /app/ssctl
