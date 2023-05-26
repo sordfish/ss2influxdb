@@ -126,10 +126,10 @@ func InverterGridRealtime2Line(plantID string, ssgridrealtimedata []byte) ([]str
 		log.Fatal(err)
 	}
 
-	gridFromToday.Name = "import-today"
-	gridToToday.Name = "export-today"
-	gridFromTotal.Name = "import-total"
-	gridToTotal.Name = "export-total"
+	gridFromToday.Name = "import_today"
+	gridToToday.Name = "export_today"
+	gridFromTotal.Name = "import_total"
+	gridToTotal.Name = "export_total"
 
 	now := time.Now().UTC()
 	epoch := now.Unix()
