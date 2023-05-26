@@ -56,3 +56,25 @@ func SendHTTPRequest(method string, url string, headers map[string]string, body 
 
 	return respBody, nil
 }
+
+func Upload2influxdb(data string) {
+
+	InfluxdbUrl := os.Getenv("INFLUXDB_URL")
+
+	if InfluxdbUrl == "" {
+		log.Fatal("InfluxDB not url set")
+	}
+
+	url := InfluxdbUrl + "/write"
+
+	headers := map[string]string{}
+	body := []byte(data)
+	token := ""
+	respBody, err := SendHTTPRequest("POST", url, headers, body, token)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(respBody)
+
+}

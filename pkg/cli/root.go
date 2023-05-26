@@ -38,6 +38,7 @@ func init() {
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ssctl.yaml)")
 
 	rootCmd.PersistentFlags().Bool("k8s", false, "Use Kubernetes secrets to read and store credentials")
+	rootCmd.PersistentFlags().Bool("upload", false, "Upload to influxdb")
 	rootCmd.PersistentFlags().Bool("debug", false, "Enable debug logging")
 
 	// Cobra also supports local flags, which will only run

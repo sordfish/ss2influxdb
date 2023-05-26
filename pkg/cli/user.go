@@ -55,7 +55,7 @@ func User(k8s bool) {
 		SunsynkToken := os.Getenv("SS_TOKEN")
 
 		if SunsynkToken == "" {
-			log.Fatal("No token found in env")
+			log.Fatal("No token found in env 4")
 		}
 
 		userdata, err := sunsynk.GetUserData(sunsynk.SSApiListPlantsEndpoint, SunsynkToken)

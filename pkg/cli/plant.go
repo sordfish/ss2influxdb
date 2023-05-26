@@ -16,14 +16,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type LineFormat struct {
-	Value     float64
-	Name      string
-	Unit      string
-	PlantId   int
-	Timestamp int64
-}
-
 // plantCmd represents the plant command
 var plantCmd = &cobra.Command{
 	Use:   "plant",
@@ -43,12 +35,12 @@ to quickly create a Cobra application.`,
 		}
 
 		k8sFlagValue, _ := cmd.Parent().PersistentFlags().GetBool("k8s")
-		uploadFlagValue, _ := cmd.Flags().GetBool("upload")
+		uploadFlagValue, _ := cmd.Parent().PersistentFlags().GetBool("upload")
 
 		pdata := Plant(k8sFlagValue)
 
 		if uploadFlagValue {
-			Upload2influxdb(pdata)
+			utils.Upload2influxdb(pdata)
 		} else {
 			fmt.Println(pdata)
 		}
@@ -67,7 +59,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	plantCmd.Flags().BoolP("upload", "u", false, "Enable upload to influxdb")
 }
 
 func Plant(k8s bool) string {
@@ -92,7 +83,7 @@ func Plant(k8s bool) string {
 		}
 
 		if SunsynkToken == "" {
-			log.Fatal("No token found in env")
+			log.Fatal("No token found in env 3")
 		}
 
 	} else {
@@ -204,27 +195,5 @@ func Plant2Line(date string, plantID int, ssplantdata []byte) ([]string, error) 
 	// sunsynk_mppt_1,plant=123456 voltage=206,current=4 1682017085
 
 	return plantDataLineStringSlice, err
-
-}
-
-func Upload2influxdb(data string) {
-
-	InfluxdbUrl := os.Getenv("INFLUXDB_URL")
-
-	if InfluxdbUrl == "" {
-		log.Fatal("InfluxDB not url set")
-	}
-
-	url := InfluxdbUrl + "/write"
-
-	headers := map[string]string{}
-	body := []byte(data)
-	token := ""
-	respBody, err := utils.SendHTTPRequest("POST", url, headers, body, token)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println(respBody)
 
 }

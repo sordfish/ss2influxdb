@@ -2,11 +2,11 @@ package sunsynk
 
 import (
 	"ssctl/pkg/utils"
+	"time"
 )
 
 var (
-	SSApiPlantEndpoint    = "https://pv.inteless.com/api/v1/plant/"
-	SSAPIInverterEndpoint = "https://pv.inteless.com/api/v1/inverter/"
+	SSApiPlantEndpoint = "https://pv.inteless.com/api/v1/plant/"
 )
 
 type SSApiPlantData struct {
@@ -32,9 +32,62 @@ type SSApiPlantDataResponse struct {
 	Success bool `json:"success"`
 }
 
-func GetPlantData(date, plantid, token string) ([]byte, error) {
+type SSApiPlantInverterData struct {
+	Sn           string `json:"sn"`
+	Alias        string `json:"alias"`
+	Gsn          string `json:"gsn"`
+	Status       int    `json:"status"`
+	Type         int    `json:"type"`
+	CommTypeName string `json:"commTypeName"`
+	CustCode     int    `json:"custCode"`
+	Version      struct {
+		MasterVer string `json:"masterVer"`
+		SoftVer   string `json:"softVer"`
+		HardVer   string `json:"hardVer"`
+		HmiVer    string `json:"hmiVer"`
+		BmsVer    string `json:"bmsVer"`
+	} `json:"version"`
+	Model     string    `json:"model"`
+	EquipMode any       `json:"equipMode"`
+	Pac       int       `json:"pac"`
+	Etoday    float64   `json:"etoday"`
+	Etotal    float64   `json:"etotal"`
+	UpdateAt  time.Time `json:"updateAt"`
+	Opened    int       `json:"opened"`
+	Plant     struct {
+		ID        int    `json:"id"`
+		Name      string `json:"name"`
+		Type      int    `json:"type"`
+		Master    any    `json:"master"`
+		Installer any    `json:"installer"`
+		Email     any    `json:"email"`
+		Phone     any    `json:"phone"`
+	} `json:"plant"`
+	GatewayVO struct {
+		Gsn    string `json:"gsn"`
+		Status int    `json:"status"`
+	} `json:"gatewayVO"`
+	SunsynkEquip       bool   `json:"sunsynkEquip"`
+	ProtocolIdentifier string `json:"protocolIdentifier"`
+	EquipType          int    `json:"equipType"`
+	RatePower          int    `json:"ratePower"`
+}
 
-	url := SSApiPlantEndpoint + "energy/" + plantid + "/day?lan=en&date=" + date
+type SSApiPlantInverterDataResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Data struct {
+		PageSize   int                      `json:"pageSize"`
+		PageNumber int                      `json:"pageNumber"`
+		Total      int                      `json:"total"`
+		Infos      []SSApiPlantInverterData `json:"infos"`
+	} `json:"data"`
+	Success bool `json:"success"`
+}
+
+func GetInverterId(plantid, token string) ([]byte, error) {
+
+	url := SSApiPlantEndpoint + plantid + "/inverters?page=1&limit=10&status=-1&type=-2"
 
 	headers := map[string]string{
 		"Content-Type": "application/json",
@@ -49,9 +102,9 @@ func GetPlantData(date, plantid, token string) ([]byte, error) {
 
 }
 
-func GetInverterData(date, inverterid, column, token string) ([]byte, error) {
+func GetPlantData(date, plantid, token string) ([]byte, error) {
 
-	url := SSAPIInverterEndpoint + "/energy/" + inverterid + "/input/day?lan=en&date=" + date + "&column=" + column
+	url := SSApiPlantEndpoint + "energy/" + plantid + "/day?lan=en&date=" + date
 
 	headers := map[string]string{
 		"Content-Type": "application/json",
