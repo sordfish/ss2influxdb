@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ssctl-plant-inverter-grid-realtime-upload
+spec:
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: ssctl-plant-inverter-grid-realtime-upload
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: IfNotPresent
+            command:
+            - /app/ssctl
+            - plant
+            - inverter
+            - --k8s
+            - --upload
+            env:
+            - name: INFLUXDB_URL
+              value: {{ .Values.Influxdb.url }}
+          restartPolicy: OnFailure
+
+
+          
