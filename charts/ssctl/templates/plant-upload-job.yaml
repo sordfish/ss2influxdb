@@ -16,7 +16,7 @@ spec:
             - /app/ssctl
             - plant
             - --k8s
-            - -u
+            - --upload
             env:
             - name: INFLUXDB_URL
               value: {{ .Values.Influxdb.url }}
