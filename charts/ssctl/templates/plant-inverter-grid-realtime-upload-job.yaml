@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: ssctl-plant-inverter-grid-realtime-upload
 spec:
-  schedule: "*/10 * * * *"
+  schedule: "* * * * *"
   jobTemplate:
     spec:
       template:
