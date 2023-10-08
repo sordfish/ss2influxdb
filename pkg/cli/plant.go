@@ -19,7 +19,7 @@ import (
 // plantCmd represents the plant command
 var plantCmd = &cobra.Command{
 	Use:   "plant",
-	Short: "A brief description of your command",
+	Short: "Get plant data from the sunsynk api",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -172,7 +172,8 @@ func Plant2Line(date string, plantID int, ssplantdata []byte) ([]string, error) 
 				log.Fatal(err)
 			}
 
-			dateTimeStr := date + "T" + datum.Time + ":00Z" // combine date and time strings
+			//need to handle BST here?
+			dateTimeStr := date + "T" + datum.Time + ":00+01:00" // combine date and time strings
 
 			// Parse dateTimeStr into a time.Time struct
 			dateTime, err := time.Parse(time.RFC3339, dateTimeStr)

@@ -66,3 +66,20 @@ func GetInverterData(date, inverterid, column, token string) ([]byte, error) {
 	return respBody, err
 
 }
+
+func GetCustomInverterData(date, edate, inverterid, params, token string) ([]byte, error) {
+
+	url := SSAPIInverterEndpoint + inverterid + "/input/day?lan=en&date=" + date + "&edate=" + edate + "&params=" + params
+
+	headers := map[string]string{
+		"Content-Type": "application/json",
+	}
+	body := []byte{}
+	respBody, err := utils.SendHTTPRequest("GET", url, headers, body, token)
+	if err != nil {
+		return respBody, err
+	}
+
+	return respBody, err
+
+}
