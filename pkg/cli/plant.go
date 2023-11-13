@@ -172,8 +172,9 @@ func Plant2Line(date string, plantID int, ssplantdata []byte) ([]string, error) 
 				log.Fatal(err)
 			}
 
+			dateTimeStr := date + "T" + datum.Time + ":00Z" // combine date and time strings
 			//need to handle BST here?
-			dateTimeStr := date + "T" + datum.Time + ":00+01:00" // combine date and time strings
+			//dateTimeStr := date + "T" + datum.Time + ":00+01:00" // combine date and time strings
 
 			// Parse dateTimeStr into a time.Time struct
 			dateTime, err := time.Parse(time.RFC3339, dateTimeStr)
