@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	SSApiListPlantsEndpoint = "https://pv.inteless.com/api/v1/plants?page=1&limit=10"
+	SSApiListPlantsEndpoint = "https://api.sunsynk.net/api/v1/plants?page=1&limit=10"
 )
 
 type SSAuthToken struct {

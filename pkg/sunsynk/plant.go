@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	SSApiPlantEndpoint = "https://pv.inteless.com/api/v1/plant/"
+	SSApiPlantEndpoint = "https://api.sunsynk.net/api/v1/plant/"
 )
 
 type SSApiPlantData struct {

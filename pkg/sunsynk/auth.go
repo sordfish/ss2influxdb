@@ -11,7 +11,7 @@ import (
 
 var (
 	// SSApiTokenEndpoint = "http://192.168.1.93:1080/oauth/token"
-	SSApiTokenEndpoint = "https://pv.inteless.com/oauth/token"
+	SSApiTokenEndpoint = "https://api.sunsynk.net/oauth/token"
 )
 
 type SSApiTokenResponse struct {

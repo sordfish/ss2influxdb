@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	SSAPIInverterEndpoint = "https://pv.inteless.com/api/v1/inverter/"
+	SSAPIInverterEndpoint = "https://api.sunsynk.net/api/v1/inverter/"
 )
 
 type SSApiInverterGridRealtimeData struct {
